@@ -65,6 +65,10 @@ export interface BotConfig {
          * Access to the revert-ranks, exile, groupban, and ungroupban command.
          */
         admin?: string[];
+                /**
+         * Access to the revert-ranks, exile, groupban, and ungroupban command.
+         */
+         helper?: string[];
     }
     /**
      * Configuration for the built-in database module used by suspension and XP-related commands.
@@ -324,9 +328,11 @@ export declare type CommandExport = {
 }
 
 export declare type BloxlinkResponse = {
-    status: string;
-    primaryAccount?: string;
-    matchingAccount?: string;
+    success: boolean;
+    user: {
+        primaryAccount?: string;
+        matchingAccount?: string;
+    };
 }
 
 export declare type RankRequest = {
