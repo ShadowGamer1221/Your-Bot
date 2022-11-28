@@ -5,7 +5,7 @@ export const config: BotConfig = {
     slashCommands: true,
     legacyCommands: {
         enabled: true,
-        prefixes: ['..'],
+        prefixes: ['!!'],
     },
     permissions: {
         all: ['945362316633993226', '945362317464444928'],
@@ -16,6 +16,7 @@ export const config: BotConfig = {
         join: ['945404307753304185'],
         signal: ['945362316633993226', '945362317464444928'],
         admin: ['945364791965405284', '945364783505502291'],
+        helper: ['945364001523638282', '945364076626853928', '945364153919488000', '945364146470400060'],
     },
     logChannels: {
         actions: '945399410777550968',
