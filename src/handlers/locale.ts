@@ -650,8 +650,8 @@ export const getMemberCountMessage = (oldCount: number, newCount: number): Messa
     } else {
         const Oldembed = new MessageEmbed()
         .setTitle('A Member Left 😭')
-        .setAuthor(redColor)
-        .setDescription(`The member count is now **${newCount}** (+${oldCount - newCount})`)
+        .setColor(redColor)
+        .setDescription(`The member count is now **${newCount}** (-${oldCount - newCount})`)
         .setTimestamp();
         return Oldembed;
     }
