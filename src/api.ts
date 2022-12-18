@@ -316,6 +316,23 @@ if(config.api) {
             return res.send({ success: false, msg: 'Failed to accept join request.' });
         }
     });
+    
+    
+    app.post('/homey', async (req, res) => {
+        const { id } = req.body;
+        if(!id) return res.send({ success: false, msg: 'Missing parameters.' });
+        try {
+            const robloxUser = await robloxClient.getUser(id);
+
+            await robloxGroup.acceptJoinRequest(robloxUser.id);
+            logAction('Accept Join Request', 'API Action', null, robloxUser);
+
+            return res.send({ success: true });
+        } catch (err) {
+            return res.send({ success: false, msg: 'Failed to accept join request.' });
+        }
+    });
+
 
     app.post('/join-requests/deny', async (req, res) => {
         const { id } = req.body;
