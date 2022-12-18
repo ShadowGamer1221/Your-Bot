@@ -5,6 +5,7 @@ import { logAction } from './handlers/handleLogging';
 import { discordClient, robloxClient, robloxGroup } from './main';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
+import { MessageEmbed } from 'discord.js';
 const app = express();
 require('dotenv').config();
 
@@ -124,7 +125,11 @@ if(config.api) {
         if(!user) return res.send({ success: false, msg: 'Missing parameters.' });
         try {
               const discordUser = user
-              discordClient.users.send(`${discordUser}`, 'Eten');
+              const embed = new MessageEmbed()
+             .setTitle('Eten!')
+             .setDescription(`Eten is klaar`)
+             .setColor('#43d177');
+              discordClient.users.send(`${discordUser}`, `${{ embeds: [embed] }}`);
             return res.send({ success: true });
         } catch (err) {
             return res.send({ success: false, msg: 'Failed to send.' });
