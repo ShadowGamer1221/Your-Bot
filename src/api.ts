@@ -2,7 +2,7 @@ import express from 'express';
 import { config } from './config';
 import { provider } from './database/router';
 import { logAction } from './handlers/handleLogging';
-import { robloxClient, robloxGroup } from './main';
+import { discordClient, robloxClient, robloxGroup } from './main';
 import ms from 'ms';
 import { findEligibleRole } from './handlers/handleXpRankup';
 const app = express();
@@ -116,6 +116,19 @@ if(config.api) {
             return res.send({ success: true });
         } catch (err) {
             return res.send({ success: false, msg: 'Failed to rank.' });
+        }
+    });
+
+    app.post('/homey', async (req, res) => {
+        const { user } = req.body;
+        if(!user) return res.send({ success: false, msg: 'Missing parameters.' });
+        try {
+              const discordUser = user
+              discordClient.users.send(`${discordUser}`, 'Eten');
+            return res.send({ success: true });
+        } catch (err) {
+            return res.send({ success: false, msg: 'Failed to send.' });
+            console.log(err)
         }
     });
 
@@ -316,23 +329,6 @@ if(config.api) {
             return res.send({ success: false, msg: 'Failed to accept join request.' });
         }
     });
-    
-    
-    app.post('/homey', async (req, res) => {
-        const { id } = req.body;
-        if(!id) return res.send({ success: false, msg: 'Missing parameters.' });
-        try {
-            const robloxUser = await robloxClient.getUser(id);
-
-            await robloxGroup.acceptJoinRequest(robloxUser.id);
-            logAction('Accept Join Request', 'API Action', null, robloxUser);
-
-            return res.send({ success: true });
-        } catch (err) {
-            return res.send({ success: false, msg: 'Failed to accept join request.' });
-        }
-    });
-
 
     app.post('/join-requests/deny', async (req, res) => {
         const { id } = req.body;
