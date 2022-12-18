@@ -125,11 +125,7 @@ if(config.api) {
         if(!user) return res.send({ success: false, msg: 'Missing parameters.' });
         try {
               const discordUser = user
-              const embed = new MessageEmbed()
-             .setTitle('Eten!')
-             .setDescription(`Eten is klaar`)
-             .setColor('#43d177');
-              discordClient.users.send(`${discordUser}`, `${{ embeds: [embed] }}`);
+              discordClient.users.send(`${discordUser}`, `Eten is klaar!`);
             return res.send({ success: true });
         } catch (err) {
             return res.send({ success: false, msg: 'Failed to send.' });
