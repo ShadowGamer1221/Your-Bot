@@ -29,13 +29,6 @@ class InfoCommand extends Command {
                     required: false,
                     type: 'String',
                 },
-                {
-                    trigger: 'roblox-discord-user',
-                    description: 'Who do you want to view the information of?',
-                    autocomplete: true,
-                    required: false,
-                    type: 'DiscordUser',
-                },
             ],
             permissions: [
                 {
@@ -54,8 +47,8 @@ class InfoCommand extends Command {
 
         let robloxUser: User | PartialUser;
 
-        if(ctx.args['roblox-discord-user']) {
-            let member = ctx.args['roblox-discord-user']
+        if(ctx.args['roblox-user']) {
+            let member = ctx.args['roblox-user']
             member = member.replace("<","");
             member = member.replace("@","");
             member = member.replace("!","");
@@ -70,7 +63,7 @@ class InfoCommand extends Command {
                 robloxUser = secondrobloxUser[0];
             } catch (err) {
                 try {
-                    const idQuery = ctx.args['roblox-discord-user'].replace(/[^0-9]/gm, '');
+                    const idQuery = ctx.args['roblox-user'].replace(/[^0-9]/gm, '');
                     const discordUser = await discordClient.users.fetch(idQuery);
                     const linkedUser = await getLinkedRobloxUser(discordUser.id, ctx.guild.id);
                     if(!linkedUser) throw new Error();
