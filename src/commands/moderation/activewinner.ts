@@ -1,4 +1,4 @@
-import { discordClient } from '../../main';
+import { discordClient, robloxClient, robloxGroup } from '../../main';
 import { MessageEmbed } from 'discord.js';
 import { TextChannel } from 'discord.js';
 import { CommandContext } from '../../structures/addons/CommandAddons';
@@ -10,7 +10,20 @@ import {
     getCommandInfoEmbed,
     getCommandListEmbed,
     getCommandNotFoundEmbed,
+    getInvalidRobloxUserEmbed,
+    getNoRankAboveEmbed,
+    getRobloxUserIsNotMemberEmbed,
+    getRoleNotFoundEmbed,
+    getSuccessfulPromotionEmbed,
+    getUnexpectedErrorEmbed,
+    getUserSuspendedEmbed,
+    getVerificationChecksFailedEmbed,
 } from '../../handlers/locale';
+import { User, PartialUser, GroupMember } from 'bloxy/dist/structures';
+import { getLinkedRobloxUser } from '../../handlers/accountLinks';
+import { checkActionEligibility } from '../../handlers/verificationChecks';
+import { logAction } from '../../handlers/handleLogging';
+import { provider } from '../../database/router';
 
 class ActivewinnerCommand extends Command {
     constructor() {
@@ -40,6 +53,54 @@ class ActivewinnerCommand extends Command {
 
     async run(ctx: CommandContext) {
 
+        let robloxUser: User | PartialUser;
+        try {
+            robloxUser = await robloxClient.getUser(ctx.args['member'] as number);
+        } catch (err) {
+            try {
+                const robloxUsers = await robloxClient.getUsersByUsernames([ ctx.args['member'] as string ]);
+                if(robloxUsers.length === 0) throw new Error();
+                robloxUser = robloxUsers[0];
+            } catch (err) {
+                try {
+                    const idQuery = ctx.args['member'].replace(/[^0-9]/gm, '');
+                    const discordUser = await discordClient.users.fetch(idQuery);
+                    const linkedUser = await getLinkedRobloxUser(discordUser.id, ctx.guild.id);
+                    if(!linkedUser) throw new Error();
+                    robloxUser = linkedUser;
+                } catch (err) {
+                    return ctx.reply({ embeds: [ getInvalidRobloxUserEmbed() ]});
+                }
+            }
+        }
+
+        let robloxMember: GroupMember;
+        try {
+            robloxMember = await robloxGroup.getMember(robloxUser.id);
+            if(!robloxMember) throw new Error();
+        } catch (err) {
+            return ctx.reply({ embeds: [ getRobloxUserIsNotMemberEmbed() ]});
+        }
+
+        if(config.verificationChecks) {
+            const actionEligibility = await checkActionEligibility(ctx.user.id, ctx.guild.id, robloxMember, role.rank);
+            if(!actionEligibility) return ctx.reply({ embeds: [ getVerificationChecksFailedEmbed() ] });
+        }
+
+        if(config.database.enabled) {
+            const userData = await provider.findUser(robloxUser.id.toString());
+            if(userData.suspendedUntil) return ctx.reply({ embeds: [ getUserSuspendedEmbed() ] });
+        }
+
+        try {
+            await robloxGroup.updateMember(robloxUser.id, role.id);
+            ctx.reply({ embeds: [ await getSuccessfulPromotionEmbed(robloxUser, role.name) ]});
+            logAction('Activitywinner', ctx.user, 'Winner', robloxUser, `${robloxMember.role.name} (${robloxMember.role.rank}) → ${role.name} (${role.rank})`);
+        } catch (err) {
+            console.log(err);
+            return ctx.reply({ embeds: [ getUnexpectedErrorEmbed() ]});
+        }
+
 
 const nothing = ctx.member as GuildMember
 
@@ -67,7 +128,13 @@ const embed = new MessageEmbed()
         const realMember = await guild.members.fetch(member)
 
   let channelSend: TextChannel;
-        channelSend = await discordClient.channels.fetch('909397619237859369') as TextChannel;
+        channelSend = await discordClient.channels.fetch('945383367556354078') as TextChannel;
+
+        const groupRoles = await robloxGroup.getRoles();
+        const currentRoleIndex = groupRoles.findIndex((role) => role.rank === robloxMember.role.rank);
+        const role = groupRoles[currentRoleIndex + 1];
+        if(!role) return ctx.reply({ embeds: [ getNoRankAboveEmbed() ]});
+        if(role.rank > config.maximumRank || robloxMember.role.rank > config.maximumRank) return ctx.reply({ embeds: [ getRoleNotFoundEmbed() ] });
 
   const successEmbed = new MessageEmbed()
 
