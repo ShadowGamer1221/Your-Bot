@@ -77,7 +77,7 @@ class TrainingCommand extends Command {
 
         try {
             await robloxGroup.updateShout(`Greetings! There is a training being hosted by ${robloxUser.name}. Join for a chance of being promoted!\n\n~| GAME LINK: https://www.roblox.com/games/8897440496/BETA-Eastside-Cafe-Hotels-Resorts\n\nsigned,\n${robloxUser.name}`);
-            ctx.reply({ embeds: [ await getSuccessfulShiftingEmbed() ]});
+            ctx.reply({ embeds: [ await getSuccessfulTrainingEmbed() ]});
             logAction('Training Announcement', ctx.user);
         } catch (err) {
             console.log(err);
