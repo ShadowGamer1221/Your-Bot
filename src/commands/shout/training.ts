@@ -20,6 +20,7 @@ import {
     redColor,
     greenColor,
     getSuccessfulTrainingEmbed,
+    getSuccessfulShiftingEmbed,
 } from '../../handlers/locale';
 import { checkActionEligibility } from '../../handlers/verificationChecks';
 import { config } from '../../config';
@@ -76,14 +77,14 @@ class TrainingCommand extends Command {
 
         try {
             await robloxGroup.updateShout(`Greetings! There is a training being hosted by ${robloxUser.name}. Join for a chance of being promoted!\n\n~| GAME LINK: https://www.roblox.com/games/8897440496/BETA-Eastside-Cafe-Hotels-Resorts\n\nsigned,\n${robloxUser.name}`);
-            ctx.reply({ embeds: [ await getSuccessfulTrainingEmbed() ]});
+            ctx.reply({ embeds: [ await getSuccessfulShiftingEmbed() ]});
             logAction('Training Announcement', ctx.user);
         } catch (err) {
             console.log(err);
             return ctx.reply({ embeds: [ getUnexpectedErrorEmbed() ]});
         }
 
-        const channelSend = await discordClient.channels.fetch('948969696865177650') as TextChannel;
+        const channelSend = await discordClient.channels.fetch('945372794651283536') as TextChannel;
         console.log(channelSend)
 
 
@@ -150,8 +151,8 @@ class TrainingCommand extends Command {
                 })
 
                 let message = await channelSend.send({
-                    content: '<@&951934159088144394>',
-                    allowedMentions: { roles: ['951934159088144394'] },
+                    content: '<@&945394793796747285>',
+                    allowedMentions: { roles: ['945394793796747285'] },
                 });
 
                 
