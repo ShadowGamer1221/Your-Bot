@@ -47,11 +47,9 @@ class AlbanCommand extends Command {
         .addField("Her birthday:", `27 April 2007`)
         .addField("Her favourite color:", `Yellow`, true)
         .addField("Her favourite game:", `Roblox`, true)
-        .addField("Her roblox profile:", `[Alban](https://www.roblox.com/users/438016092/profile)`, true)
+        .addField("Her roblox profile:", `[Alban](https://www.roblox.com/users/3234631924/profile)`, true)
         .setFooter(`Best person on the server`)
         .setTimestamp()
-
-        const choices = ctx.command.options[0].choices // get choices of first option
 
         ctx.reply({ embeds: [albanEmbed] });
 
